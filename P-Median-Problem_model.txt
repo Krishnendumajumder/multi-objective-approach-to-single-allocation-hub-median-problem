@@ -1,0 +1,38 @@
+/*********************************************
+ * OPL Model: P-Median Problem
+ * Author: krish
+ * Created: 16-Jun-2025
+ *********************************************/
+
+// Index sets
+{string} Warehouses = ...;
+{string} Customers = ...;
+
+// Parameters
+int MaxWarehousesP = ...;
+float Demand[Customers] = ...;
+float Distance[Warehouses][Customers] = ...;
+
+// Decision Variables
+dvar boolean Open[Warehouses];
+dvar boolean Assign[Warehouses][Customers];
+
+// Objective Function
+minimize 
+  sum(w in Warehouses, c in Customers)
+    Distance[w][c] * Demand[c] * Assign[w][c];
+
+// Constraints
+subject to {
+  
+  // Each customer must be assigned to exactly one warehouse
+  forall(c in Customers)
+    sum(w in Warehouses) Assign[w][c] == 1;
+
+  // Only P warehouses can be opened
+  sum(w in Warehouses) Open[w] == MaxWarehousesP;
+
+  // A customer can only be assigned to an open warehouse
+  forall(w in Warehouses, c in Customers)
+    Assign[w][c] <= Open[w];
+}
